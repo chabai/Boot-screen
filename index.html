@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>上传</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/style.css"></head>
+<body>
+	<div class="container">
+		<div class="clearfix">
+			<div class="imgbox">
+				<img src="" alt=""></div>
+			<div class="mask" >
+				<input type="file" id="fileToUpload">
+				<button onclick="upload()" id="uploadButton" class="btn1">上传图片</button>
+			</div>
+		</div>
+		<div>
+			<label for="">添加链接地址：</label>
+			<input type="text" class="write" value=""></div>
+		<p class="space">
+			<label for="">跳转类型：</label>
+			<input type="radio" value="0" name="inputType" >
+			0:网页
+			<input type="radio" value="1" name="inputType" >
+			1:商品详情
+			<input type="radio" value="2" name="inputType" >
+			2:话题
+			<input type="radio" value="3" name="inputType" >
+			3:用户空间
+			<input type="radio" value="4" name="inputType" >
+			4:聊天界面
+			<input type="radio" value="5" name="inputType" >
+			5:灵感集
+			<input type="radio" value="6" name="inputType" >
+			6:家具图详情
+			<input type="radio" value="7" name="inputType" >
+			7:专题
+			<input type="radio" value="8" name="inputType" >8:子话题</p>
+		<p class="center">
+			<input type="button" class="btn3" value="提 交" onclick="addAd()"></p>
+	</div>
+	<script src="http://cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+	<script>
+	    
+	     function upload() {
+
+	     	$("#uploadButton").text("上传中..").attr("disabled", "disabled");
+	        var formData = new FormData();
+	        formData.append('file', $("#fileToUpload")[0].files[0]); //核心代码
+	        //console.info($("#fileToUpload")[0].files[0])
+	        $.ajax({
+	            url: 'http://image.houpix.com/',
+	            type: 'POST',
+	            data: formData,
+	            processData: false,
+                contentType: false,
+	            success: function(data) {
+	                $("#uploadButton").text("上传成功").removeAttr("disabled");
+	                imgId = data.data.fileid;
+	                $(".imgbox img").attr("src","http://image.houpix.com/"+data.data.fileid);
+	            },
+	            error: function(e) {
+	                $("#ajaxUploadButton").val("ajax上传").removeAttr("disabled");
+	                alert("上传失败，请重新上传");
+	            }
+	        });
+	    }
+	    function addAd() {
+	    	console.log(oLink);
+	        console.log(imgId);
+	        var oLink=$(".write").val();
+	        var item = $("input[name='inputType']:checked").val();
+	        $.post("http://service.houpix.com/admanage/intro/updateintro",{"action":"insert","link": oLink, "link_type":item,"imgid": imgId}, function(data){
+	        	console.log(data);
+	        })
+	        .success(function() { $("#uploadButton").text("上传图片");alert("上传成功"); })
+    		.error(function() { alert("上传失败，请重新上传"); })
+
+		        // $.ajax({
+
+		        //     url: 'http://basicapi.dev.croy.cn/admanage/intro/updateintro', //
+		        //     type: 'POST',
+		        //     processData: false,
+	         //        contentType: false,
+		        //     data: {"action": "insert","link": oLink, "link_type":0,"imgid": imgId},
+		        //     success: function(data) {
+		        //     	console.log("success");
+		        //     	console.log(data);
+		        //         $(".imgbox img").attr("src","http://image.croy.cn/"+imgId);
+		        //         $(".imgbox img").parent().attr("href",oLink);
+		        //     },
+		        //     error: function(e) {
+		        //         $("#ajaxUploadButton").val("ajax上传").removeAttr("disabled");
+		        //         alert("上传失败，请重新上传");
+		        //     }
+		        // });
+	    }
+	</script>
+</body>
+</html>
